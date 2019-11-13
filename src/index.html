@@ -1,0 +1,476 @@
+<html>
+  <head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147552064-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-147552064-1');
+	</script>
+
+    <meta charset="utf-8" />
+    <meta
+      content="width=device-width,initial-scale=1,minimal-ui"
+      name="viewport"
+    />
+    <link
+      rel="shortcut icon"
+      href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/////////////////////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/////6+fv/W0KZ/1tCmf9bQpn//v7+///////////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////W0KZ/1tCmf9bQpn/W0KZ/1tCmf9bQpn//v7//////////////////Y+PjzkAAAAAAAAAAAAAAAAAAAAA/////1tCmf9bQpn//////1tCmf9bQpn/W0KZ/1tCmf9bQpn/W0GZ/0gTkv/+/v7//////wAAAAAAAAAAAAAAAP////9bQpn//////////9r/////opDE/1tCmf9bQpn/W0KZ/1tCmf9bQpn/W0KZ/1o+mv//////AAAAAAAAAAD/////Z1Ke//////8AAAAAAAAAAP////+FcrL/W0KZ/1tCmf9bQpn/W0KZ/1tCmf9bQpn//////wAAAAAAAAAAAAAAAP//////////////SwAAAAAAAAAA//////////9bQpn/W0KZ/19Hm/////////////////8AAAAAAAAAAP////v/////W0KZ//////8AAAAA/////04jlf9cRJr//////1tCmf//////W0KZ/+nn8P/////+AAAAAAAAAAD////5nYvB/1tCmf//////AAAAAP////9bQpn/W0KZ/////////////////1tCmf9fR5v//////wAAAAAAAAAAAAAAAP//////////////+wAAAADf398F//////////////94AAAAAP////v//////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////9YO5j//////wAAAAD//////////////8oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////W0KZ////////////8O71/1pBmf//////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEAC/////1tCmf9bQpn//////1tCmf9bQpn//////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////1o/mf9bQpn/W0KZ//////9bQpn/W0KZ///////////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////9bQpn/W0KZ/1tCmf9bQpn/W0KZ/1tCmf9bQZn//////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAL+/vwL///////////////////////////////////////////////8AAAAAwf8AAIB/AACADwAAgAMAAIABAACMAQAAzgEAAIQBAACEAQAAxmMAAP4jAAD+AwAA/gMAAPwBAAD8AQAA/AEAAA=="
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/vue-material@beta/dist/theme/default.css"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/codemirror.min.css" />
+    <link rel="stylesheet" href="https://codemirror.net/addon/scroll/simplescrollbars.css"/>
+  </head>
+    <body>
+      <div style="max-width: 400px; margin: 0 auto;" class="email-container">
+      	<!-- BEGIN BODY -->
+        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+        	<tr>
+            <td class="bg_white logo" style="padding: 3em 13em; text-align: center; background-image: url(https://wx4.sinaimg.cn/mw690/b016a00egy1g8vlm6g45oj20h1040dh3.jpg); background-size: 100% 100%">
+            </td>
+  	      </tr><!-- end tr -->
+        </table>
+      </div>
+
+    <div id="app">
+        <div class="md-layout">
+          <div class="md-layout-item">
+            <!-- <h1 style="padding: 0px; margin-top:0.5rem; margin-bottom:0.5rem;">Python - Learn Unit Testing</h1> -->
+            <h1 style="padding: 0px; margin-top:0.5rem; margin-bottom:0.5rem;">Python - Learn Data Structure</h1>
+          </div>
+        </div>
+        <md-tabs>
+          <md-tab v-for="question in questions" :key=question.name v-bind:md-label=question.name+question.status>
+            <jest-activity v-bind:layout-things=question.layoutItems v-bind:question-name=question.name  @questionhandler="toggleQuestionStatus"/>
+          </md-tab>
+        </md-tabs>
+      </div>
+    </body>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-material@beta"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/python/python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-codemirror@4.0.6/dist/vue-codemirror.min.js"></script>
+    <script src="https://codemirror.net/addon/scroll/simplescrollbars.js"></script>
+    <script>
+    Vue.use(VueMaterial.default)
+    Vue.use(window.VueCodemirror)
+    Vue.component('jest-activity', {
+        props: ['layoutThings', 'questionName'],
+        data: function () {
+            return {
+            answer:{jsonFeedback:'',htmlFeedback:'',textFeedback:'',isComplete:false},
+            layoutItems: this.layoutThings,
+            isHidden: true,
+            submitText: "Submit",
+            isCorrectColor: "#ff2500",
+            cmOptions: {
+              mode: "python",
+              lineNumbers: true,
+              scrollbarStyle: "simple"
+            },
+            cmReadOnly: {
+              lineNumbers: true,
+              mode:  "python",
+              readOnly: true,
+              scrollbarStyle: "simple"
+            },
+            cmInstructions:{
+              lineNumbers: false,
+              mode: "text",
+              readOnly: true,
+              scrollbarStyle: "simple"
+            },
+            cmRead:{
+              lineNumbers: false,
+              mode: "text",
+              readOnly: true,
+              scrollbarStyle: "simple"
+            }
+        }
+        },
+        methods: {
+            postContents: function () {
+            const gatewayUrl = '';
+            this.$set(this, 'submitText', 'Loading...');
+            this.$set(this, 'answer', {jsonFeedback:'',htmlFeedback:'',textFeedback:'',isComplete:false});
+            this.$set(this, 'isHidden', true);
+            fetch(gatewayUrl, {
+        method: "POST",
+        headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({userToken: "ABCDE", shown:{0:this.layoutItems[0].vModel},editable:{0:this.layoutItems[1].vModel},hidden: {0: this.layoutItems[2].vModel}})
+        }).then(response => {
+            return response.json()
+        }).then(data => {
+            let temp = JSON.parse(JSON.stringify(data));
+            temp.jsonFeedback = JSON.stringify(temp.jsonFeedback,null,2);
+            this.$set(this, 'answer', temp);
+            this.$set(this, 'isHidden', false);
+            this.$set(this, 'submitText', 'Submit');
+              if (this.answer && this.answer.isComplete) {
+                this.$set(this, 'isCorrectColor', 'green');
+              } else {
+                this.$set(this, 'isCorrectColor', '#ff2500');
+              }
+            return this.$emit('questionhandler',{data, questionName:this.questionName})
+            })
+         }
+        },
+        template: `<div class="md-layout">
+          <div class="md-layout-item md-size-100">
+            <div class="md-layout md-gutter">
+              <div class="md-layout-item md-size-60">
+                <md-card class="input-card">
+                  <md-card-header>
+                    <md-card-header-text
+                      ><div class="md-subheading"><b>Introduction</b></div>
+                    </md-card-header-text>
+                  </md-card-header>
+                  <md-card-content>
+                    <codemirror
+                      class="instructionTextarea"
+                      v-model="layoutItems[3].vModel"
+                      :options="cmInstructions"
+                    ></codemirror>
+                  </md-card-content>
+                </md-card>
+              </div>
+              <div class="md-layout-item md-size-40">
+                <md-card class="input-card">
+                  <md-card-header>
+                    <md-card-header-text
+                      ><div class="md-subheading"><b>Tests</b></div>
+                    </md-card-header-text>
+                  </md-card-header>
+                  <md-card-content>
+                    <codemirror
+                      class="shownTextarea"
+                      v-model="layoutItems[0].vModel"
+                      :options="cmReadOnly"
+                    ></codemirror>
+                  </md-card-content>
+                </md-card>
+              </div>
+            </div>
+          </div>
+          <br />
+          <div class="md-layout-item md-size-100" style="margin-top:10px;">
+            <div class="md-layout md-gutter">
+              <div class="md-layout-item md-size-60">
+                <md-card class="input-card">
+                  <md-card-header>
+                    <md-card-header-text
+                      ><div class="md-subheading"><b>Write your function here:)</b></div>
+                    </md-card-header-text>
+                    <button class="button" id="submit" v-on:click="postContents">
+                      <span>{{ submitText }}</span>
+                    </button>
+                    <button
+                      class="button"
+                      v-bind:class="{ hidden: isHidden}"
+                      v-bind:style="{ background: isCorrectColor}"
+                    >
+                      <span>{{
+                        answer && answer.isComplete ? "Passed" : "Failed"
+                      }}</span>
+                    </button>
+                  </md-card-header>
+                  <md-card-content>
+                    <codemirror
+                      class="editableTextarea"
+                      v-model="layoutItems[1].vModel"
+                      :options="cmOptions"
+                    ></codemirror>
+                  </md-card-content>
+                </md-card>
+              </div>
+              <div class="md-layout-item md-size-40">
+                <md-card>
+                  <md-card-header>
+                    <md-card-header-text>
+                      <div class="md-subheading"><b>Output</b></div>
+                    </md-card-header-text>
+                  </md-card-header>
+                  <md-card-content>
+                    <md-field>
+                      <md-tabs class="output-tabs">
+                        <md-tab id="tab-htmlResults" md-label="HTML results">
+                          <div
+                            class="output-tab"
+                            v-html="answer.htmlFeedback"
+                            style="overflow: scroll;"
+                          ></div>
+                        </md-tab>
+                        <md-tab id="tab-jsonResults" md-label="JSON results">
+                          <md-textarea
+                            class="output-tab"
+                            v-model="answer.jsonFeedback"
+                            readonly
+                          ></md-textarea>
+                        </md-tab>
+                        <md-tab id="tab-textResults" md-label="Text results">
+                          <md-textarea
+                            class="output-tab"
+                            v-model="answer.textFeedback"
+                            readonly
+                          ></md-textarea>
+                        </md-tab>
+                      </md-tabs>
+                    </md-field>
+                  </md-card-content>
+                </md-card>
+              </div>
+              </div>
+            </div>
+              <br />
+              <div class="md-layout-item md-size-100" style="margin-top:10px;">
+              <div class="md-layout md-gutter">
+              <div class="md-layout-item md-size-100">
+                <md-card class="input-card">
+                  <md-card-header>
+                    <md-card-header-text
+                      ><div class="md-subheading"><b>Recommend List</b></div>
+                    </md-card-header-text>
+                  </md-card-header>
+                  <md-card-content>
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                  <tr>
+                    <td valign="top" width="150px"  style="padding-top: 10px;" >
+                    <img src="https://wx3.sinaimg.cn/mw690/b016a00egy1g8vn2xm5nlj20u00gvtaq.jpg" alt="" style="width: 150px; max-width: 500px; height: auto; margin: auto; display: block;">
+                    </td>
+                    <td valign="top" width="150px"  style="padding-top: 10px;" >
+                    <img src="https://wx2.sinaimg.cn/mw690/b016a00egy1g8vn3hgphsj20ii0afai3.jpg" alt="" style="width: 150px; max-width: 500px; height: auto; margin: auto; display: block;">
+                    </td>
+                    <td valign="top" width="150px"  style="padding-top: 10px;" >
+                    <img src="https://wx1.sinaimg.cn/mw690/b016a00egy1g8vn3wk16xj20m80citfb.jpg" alt="" style="width: 150px; max-width: 500px; height: auto; margin: auto; display: block;">
+                    </td>
+                    <td valign="top" width="150px"  style="padding-top: 10px;" >
+                    <img src="https://wx4.sinaimg.cn/mw690/b016a00egy1g8vn47pi93j20ha09q0u7.jpg" alt="" style="width: 150px; max-width: 500px; height: auto; margin: auto; display: block;">
+                    </td>
+                    </td>
+                    <td valign="top" width="150px"  style="padding-top: 10px;" >
+                    <img src="https://wx2.sinaimg.cn/mw690/b016a00egy1g8vnznmo8dj20g50930u0.jpg" alt="" style="width: 150px; max-width: 500px; height: auto; margin: auto; display: block;">
+                    </td>
+                    </td>
+                    <td valign="top" width="150px"  style="padding-top: 10px;" >
+                    <img src="https://wx3.sinaimg.cn/mw690/b016a00egy1g8vnzokmncj20zk0k0drb.jpg" alt="" style="width: 150px; max-width: 500px; height: auto; margin: auto; display: block;">
+                    </td>
+                  </tr>
+                    <tr>
+              		  <td valign="top" width="150px"  style="padding-top: 10px;" >
+              			  		<p><a href="https://docs.python.org/3/" class="btn" style="border-radius: 150px; font-size: 13px; border-radius: 4px; background-color: #ffffff; color:bg_black  ">💡 Data Structures Documentation of Python3</a></p>
+              				</td>
+                      <td valign="top" width="150px"  style="padding-top: 10px;" >
+              			  		<p><a href="https://www.digitalocean.com/community/tutorials/understanding-dictionaries-in-python-3" class="btn" style="border-radius: 150px; font-size: 13px; border-radius: 4px; background-color: #ffffff; color:bg_black  ">🔑 Understanding Dictionaries in Python 3</a></p>
+              				</td>
+                      <td valign="top" width="150px"  style="padding-top: 10px;" >
+              			  		<p><a href="https://www.c-sharpcorner.com/article/data-type-python/" class="btn" style="border-radius: 150px; font-size: 13px; border-radius: 4px; background-color: #ffffff; color:bg_black  ">🔨 Python Data Types</a></p>
+              				</td>
+                      <td valign="top" width="150px"  style="padding-top: 10px;" >
+              			  		<p><a href="https://35.202.138.188/programming/python-dictionary/" class="btn" style="border-radius: 150px; font-size: 13px; border-radius: 4px; background-color: #ffffff; color:bg_black  ">📌 Python3 Data Structure PyBlog In</a></p>
+              				</td>
+                      <td valign="top" width="150px"  style="padding-top: 10px;" >
+              			  		<p><a href="https://engmrk.com/guide-to-python-dictionaries/" class="btn" style="border-radius: 150px; font-size: 13px; border-radius: 4px; background-color: #ffffff; color:bg_black  ">🔍 Guide to Python Dictionaries (dict)</a></p>
+              				</td>
+                      <td valign="top" width="150px"  style="padding-top: 10px;" >
+              			  		<p><a href="https://fullstackfeed.com/dictionaries-maps-and-hash-tables-in-the-python-standard-library/" class="btn" style="border-radius: 150px; font-size: 13px; border-radius: 4px; background-color: #ffffff; color:bg_black  ">💎 Dictionaries, Maps, and Hash Tables in the Python Standard Library</a></p>
+              				</td>
+
+              			</tr>
+              		</table>
+
+                  </md-card-content>
+                </md-card>
+              </div>
+
+            </div>
+          </div>
+        </div>`
+    })
+    new Vue({
+      el: "#app",
+      data: function () {
+            return {
+            questions:[
+                {name:"string 1", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tstring = 'AaSMR3IDD4BGS7dLSF9Eaf'\n\tdef test_swap(self):\n\t\tself.assertEqual(example.Swap(self.string), ['aAsmr3idd4bgs7Dlsf9eAF', 'aasmr3idd4bgs7dlsf9eaf', 'FAe9fslD7sgb4ddi3rmsAa'.swapcase()])\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def Swap(string):\n\t\"\"\"return the list of the following 3 items:\n\t\t1. the swapped case of given string.\n\t\t2. the lower case of given string.\n\t\t3. the inverse case of given string.\"\"\""},
+                  {vModel: "test"},
+                  {vModel: "Textual data in Python is handled with str objects, or strings.\nStrings are immutable sequences of Unicode code points.\nString literals are written in a variety of ways:\n\t1. Single quotes: 'allows embedded \"double\" quotes'\n\t2. Double quotes: \"allows embedded 'single' quotes\".\n\t3. Triple quoted: '''Three single quotes''', \"\"\"Three double quotes\"\"\"\n\n🦝str.swapcase():\n\tReturn a copy of the string with uppercase characters converted to lowercase and vice versa.\n\tNote that it is not necessarily true that s.swapcase().swapcase() == s.\n\n🐥str.lower()\n\tReturn a copy of the string with all the cased characters 4 converted to lowercase.\n\tThe lowercasing algorithm used is described in section 3.13 of the Unicode Standard."},
+                  {vModel: "https://docs.python.org/3/"}
+                ], status:" 🔴"},
+                {name:"string 2", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tsearch1, search2 = 'boy', 'girl'\n\tstring = 'aAsrm3idd4boygs7Dlsf9eAF'\n\tdef test_search1(self):\n\t\tself.assertEqual(example.Search(self.string, self.search1), True)\n\tdef test_search2(self):\n\t\tself.assertEqual(example.Search(self.string, self.search2), False)\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def Search(string, search):\n\t#return status (true or false) whether given item can be found as sub-string in given string"},
+                  {vModel: "test"},
+                  {vModel: "Textual data in Python is handled with str objects, or strings.\nStrings are immutable sequences of Unicode code points.\nString literals are written in a variety of ways:\n\t1. Single quotes: 'allows embedded \"double\" quotes'\n\t2. Double quotes: \"allows embedded 'single' quotes\".\n\t3. Triple quoted: '''Three single quotes''', \"\"\"Three double quotes\"\"\"\n\n🦝str.swapcase():\n\tReturn a copy of the string with uppercase characters converted to lowercase and vice versa.\n\tNote that it is not necessarily true that s.swapcase().swapcase() == s.\n\n🐥str.lower()\n\tReturn a copy of the string with all the cased characters 4 converted to lowercase.\n\tThe lowercasing algorithm used is described in section 3.13 of the Unicode Standard."},
+                  {vModel: "💡 Data Structures Documentation of Python3: https://docs.python.org/3/tutorial/datastructures.html#dictionaries"}
+                ], status:" 🔴"},
+                {name:"tuple 1", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\ttup = (1,2,3,4,5,6,7)\n\tdef test_visit(self):\n\t\tself.assertEqual(example.Visit(self.tup), (2,3,4,5))\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def Visit(tup):\n\t#return the second to the fifth elements in the given tuple"},
+                  {vModel: "test"},
+                  {vModel: "Tuples are immutable sequences, typically used to store collections of heterogeneous data (such as the 2-tuples produced by the enumerate() built-in).\nTuples are also used for cases where an immutable sequence of homogeneous data is needed (such as allowing storage in a set or dict instance).\n\nclass tuple([iterable]):\n\tTuples may be constructed in a number of ways:\n\t\t🐶Using a pair of parentheses to denote the empty tuple: ()\n\t\t🦄Using a trailing comma for a singleton tuple: a, or (a,)\n\t\t🦁Separating items with commas: a, b, c or (a, b, c)\n\t\t🐯Using the tuple() built-in: tuple() or tuple(iterable)"},
+                  {vModel: "💡 Data Structures Documentation of Python3: https://docs.python.org/3/tutorial/datastructures.html#dictionaries"}
+                ], status:" 🔴"},
+                {name:"tuple 2", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\ttup1 = (1,2,3,4,5,6,7)\n\ttup2 = ('abc', 'xyz')\n\tdef test_join(self):\n\t\tself.assertEqual(example.Join(self.tup1, self.tup2), (1,2,3,4,5,6,7, 'abc', 'xyz'))\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def Join(tup1, tup2):\n\t#return join result of 2 given tuples"},
+                  {vModel: "test"},
+                  {vModel: "Tuples are immutable sequences, typically used to store collections of heterogeneous data (such as the 2-tuples produced by the enumerate() built-in).\nTuples are also used for cases where an immutable sequence of homogeneous data is needed (such as allowing storage in a set or dict instance).\n\nclass tuple([iterable]):\n\tTuples may be constructed in a number of ways:\n\t\t🐶Using a pair of parentheses to denote the empty tuple: ()\n\t\t🦄Using a trailing comma for a singleton tuple: a, or (a,)\n\t\t🦁Separating items with commas: a, b, c or (a, b, c)\n\t\t🐯Using the tuple() built-in: tuple() or tuple(iterable)"},
+                  {vModel: "💡 Data Structures Documentation of Python3: https://docs.python.org/3/tutorial/datastructures.html#dictionaries"}
+                ], status:" 🔴"},
+                {name:"list 1", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tlist1 = ['life','is','short']\n\tlist2 = ['you','need','python']\n\tdef test_where(self):\n\t\tself.assertEqual(example.Where(2, self.list2), \"python\")\n\tdef test_index(self):\n\t\tself.assertEqual(example.Index('is', self.list1), 1)\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def Where(num, test_list):\n\t#return the item which is located position num in given list.\ndef Index(item, test_list):\n\t#return the position of item in given list."},
+                  {vModel: "test"},
+                  {vModel: "The list data type in Python has some methods. Here are some of the methods of list objects you might need:\n\n\t🐷list.index(x[, start[, end]])\n\n\t\tReturn zero-based index in the list of the first item whose value is equal to x. \n\t\tRaises a ValueError if there is no such item.\n\n\t\tThe optional arguments start and end are interpreted as in the slice notation and are used to limit the search to a particular subsequence of the list. \n\t\tThe returned index is computed relative to the beginning of the full sequence rather than the start argument."},
+                  {vModel: "💡 Data Structures Documentation of Python3: https://docs.python.org/3/tutorial/datastructures.html#dictionaries"}
+                ], status:" 🔴"},
+                {name:"list 2", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tlist1 = ['life','is','short']\n\tlist2 = ['you','need','python']\n\tdef test_add1(self): \n\t\tself.assertEqual(example.Add('short',',', self.list1), ['life','is','short',','])\n\tdef test_add2(self):\n\t\tself.assertEqual(example.Add('python','!', self.list2), ['you','need','python','!'])\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def Add(item, add_item, test_list):\n\t#return test_list with add_item inserted right after item."},
+                  {vModel: "test"},
+                  {vModel: "The list data type in Python has some methods. Here are some of the methods of list objects you might need:\n\n\t🐹list.insert(i, x)\n\n\t\tInsert an item at a given position. The first argument is the index of the element before which to insert,\n\t\tso a.insert(0, x) inserts at the front of the list, and a.insert(len(a), x) is equivalent to a.append(x)."},
+                  {vModel: "💡 Data Structures Documentation of Python3: https://docs.python.org/3/tutorial/datastructures.html#dictionaries"}
+                ], status:" 🔴"},
+                {name:"list 3", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tlist1 = ['life','is','short']\n\tlist2 = ['you','need','python']\n\tdef test_alter(self):\n\t\tself.assertEqual(example.Alter('python','python3', self.list2), ['you','need','python3'])\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def Alter(item, item_updated, test_list):\n\t#return test_list with item altered to item_updated."},
+                  {vModel: "test"},
+                  {vModel: "The list data type in Python has some methods. Here are some of the methods of list objects you might need:\n\n\t🐷list.index(x[, start[, end]])\n\n\t\tReturn zero-based index in the list of the first item whose value is equal to x. \n\t\tRaises a ValueError if there is no such item.\n\n\t\tThe optional arguments start and end are interpreted as in the slice notation and are used to limit the search to a particular subsequence of the list. \n\t\tThe returned index is computed relative to the beginning of the full sequence rather than the start argument.\n\n\t🐹list.insert(i, x)\n\n\t\tInsert an item at a given position. The first argument is the index of the element before which to insert,\n\t\tso a.insert(0, x) inserts at the front of the list, and a.insert(len(a), x) is equivalent to a.append(x)."},
+                  {vModel: "💡 Data Structures Documentation of Python3: https://docs.python.org/3/tutorial/datastructures.html#dictionaries"}
+                ], status:" 🔴"},
+                {name:"list 4", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tlist1 = ['life','is','short',',']\n\tlist2 = ['you','need','python','!']\n\tdef test_alter(self):\n\t\tself.assertEqual(example.Remove('!'', self.list2), ['you','need','python'])\n\tdef test_alter(self):\n\t\tself.assertEqual(example.Remove(','', self.list1), ['life','is','short'])\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def Remove(item, test_list):\n\t#return test_list with item removed."},
+                  {vModel: "test"},
+                  {vModel: "The list data type in Python has some methods. Here are some of the methods of list objects you might need:\n\n\t🐼list.remove(x)\n\n\t\tRemove the first item from the list whose value is equal to x. It raises a ValueError if there is no such item."},
+                  {vModel: "💡 Data Structures Documentation of Python3: https://docs.python.org/3/tutorial/datastructures.html#dictionaries"}
+                ], status:" 🔴"},
+                {name:"dict 1", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tdict1 = {'Name': 'Zara', 'Age': 7, 'Class': 'First'}\n\tdef test_find(self):\n\t\tself.assertEqual(example.Find(self.dict1, 'Age'), 7)\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def Find(test_dict, key):\n\t\t#return value in test_dict where key is given."},
+                  {vModel: "test"},
+                  {vModel: "Another useful data type built into Python is the dictionary. Dictionaries are sometimes found in other languages as “associative memories” or “associative arrays”.\nUnlike sequences, which are indexed by a range of numbers, dictionaries are indexed by keys, which can be any immutable type; strings and numbers can always be keys.\nTuples can be used as keys if they contain only strings, numbers, or tuples;\nif a tuple contains any mutable object either directly or indirectly, it cannot be used as a key.\nYou can’t use lists as keys, since lists can be modified in place using index assignments, slice assignments, or methods like append() and extend().\n\nHere is a small example using a dictionary:\n\n\t>>> tel = {'jack': 4098, 'sape': 4139}\n\t>>> tel['guido'] = 4127\n\t>>> tel\n\t{'jack': 4098, 'sape': 4139, 'guido': 4127}\n\t>>> tel['jack']\n\t4098\n\t>>> del tel['sape']\n\t>>> tel['irv'] = 4127\n\t>>> tel\n\t{'jack': 4098, 'guido': 4127, 'irv': 4127}\n\t>>> list(tel)\n\t['jack', 'guido', 'irv']\n\t>>> sorted(tel)\n\t['guido', 'irv', 'jack']\n\t>>> 'guido' in tel\n\tTrue\n\t>>> 'jack' not in tel\n\tFalse"},
+                  {vModel: "💡 Data Structures Documentation of Python3: https://docs.python.org/3/tutorial/datastructures.html#dictionaries"}
+                ], status:" 🔴"},
+                {name:"dict 2", layoutItems: [
+                  {vModel: "import unittest\nimport example\nclass TestExample(unittest.TestCase):\n\tdict1 = {'Name': 'Zara', 'Age': 7, 'Class': 'First'}\n\tdef test_dictToList(self):\n\t\tself.assertEqual(example.DictToList(self.dict1), ['Zara', 7, 'First'])\nif __name__ == '__main__':\n\tunittest.main()"},
+                  {vModel: "def DictToList(test_dict):\n\t#return list of values for each key in given dict\n\tdictToList = list()"},
+                  {vModel: "test"},
+                  {vModel: "Another useful data type built into Python is the dictionary. Dictionaries are sometimes found in other languages as “associative memories” or “associative arrays”.\nUnlike sequences, which are indexed by a range of numbers, dictionaries are indexed by keys, which can be any immutable type; strings and numbers can always be keys.\nTuples can be used as keys if they contain only strings, numbers, or tuples;\nif a tuple contains any mutable object either directly or indirectly, it cannot be used as a key.\nYou can’t use lists as keys, since lists can be modified in place using index assignments, slice assignments, or methods like append() and extend().\n\nHere is a small example using a dictionary:\n\n\t>>> tel = {'jack': 4098, 'sape': 4139}\n\t>>> tel['guido'] = 4127\n\t>>> tel\n\t{'jack': 4098, 'sape': 4139, 'guido': 4127}\n\t>>> tel['jack']\n\t4098\n\t>>> del tel['sape']\n\t>>> tel['irv'] = 4127\n\t>>> tel\n\t{'jack': 4098, 'guido': 4127, 'irv': 4127}\n\t>>> list(tel)\n\t['jack', 'guido', 'irv']\n\t>>> sorted(tel)\n\t['guido', 'irv', 'jack']\n\t>>> 'guido' in tel\n\tTrue\n\t>>> 'jack' not in tel\n\tFalse"},
+                  {vModel: "💡 Data Structures Documentation of Python3: https://docs.python.org/3/tutorial/datastructures.html#dictionaries"}
+                ], status:" 🔴"}
+                ]
+            }
+      },
+      methods: {
+        toggleQuestionStatus (response) {
+          const {data, questionName} = response
+          if (data.isComplete) {
+            this.questions.find(item => item.name === questionName).status = " ✔️";
+
+          }
+          else {
+          this.questions.find(item => item.name === questionName).status = " 🔴";
+          }
+        }
+      }
+    });
+  </script>
+  <style lang="scss" scoped>
+  	body {
+  		background-color: #ADD8E6;
+  	}
+    textarea {
+      font-size: 1rem !important;
+      height: 100%;
+    }
+    .md-card-header {
+      padding-top: 0px;
+    }
+    .md-tabs {
+
+      width: 100%;
+    }
+    .md-tab {
+      min-height: 1160px;
+    }
+    .md-content {
+      min-height: 160px !important;
+    }
+    .md-card {
+      overflow: hidden;
+    }
+    .md-field {
+
+      padding-top: 0px;
+    }
+    .button {
+      display: inline-block;
+      border-radius: 4px;
+      background-color: #0099ff;
+      border: none;
+      color: #ffffff;
+      text-align: center;
+      font-size: 18px;
+      padding: 10;
+      transition: all 0.1s;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    #submit span {
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+      transition: 0.5s;
+    }
+    #submit span:after {
+      content: ">";
+      position: absolute;
+      opacity: 0;
+      top: 0;
+      right: -20px;
+      transition: 0.5s;
+    }
+    #submit:hover span {
+      padding-right: 25px;
+    }
+    #submit:hover span:after {
+      opacity: 1;
+      right: 0;
+    }
+    .hidden {
+      display: none;
+    }
+    .output-tab {
+      min-height: 170px !important;
+      max-height: 170px !important;
+      overflow: scroll;
+    }
+    h1{
+      margin-top: 1rem;
+      padding:20px;
+      text-align: center
+    }
+    .CodeMirror {
+      height: 215px;
+    }
+    .CodeMirror-overlayscroll-vertical {
+      display: block !important;
+    }
+  </style>
+</html>
